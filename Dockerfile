@@ -1,18 +1,17 @@
 FROM python:3.11-slim
 
-# Prevent Python from buffering logs
 ENV PYTHONUNBUFFERED=1
 
-# Set working directory
 WORKDIR /app
 
-# Copy application code
+# Install Flask
+RUN pip install --no-cache-dir flask
+
+# Copy app code
 COPY app.py .
 
-# Expose the port Render uses
+# Render listens on 8080
 EXPOSE 8080
 
-# Start the app
+# Start the server
 CMD ["python", "app.py"]
-
-
