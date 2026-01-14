@@ -1,27 +1,18 @@
-FROM ubuntu:22.04
+FROM python:3.11-slim
 
-ENV DEBIAN_FRONTEND=noninteractive
+# Prevent Python from buffering logs
+ENV PYTHONUNBUFFERED=1
 
-# Install required tools
-RUN apt-get update && \
-    apt-get install -y \
-      curl \
-      gnupg \
-      ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+# Set working directory
+WORKDIR /app
 
-# Add Antigravity repository
-RUN mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://us-central1-apt.pkg.dev/doc/repo-signing-key.gpg | \
-      gpg --dearmor --yes -o /etc/apt/keyrings/antigravity-repo-key.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/antigravity-repo-key.gpg] https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev/ antigravity-debian main" \
-      > /etc/apt/sources.list.d/antigravity.list
+# Copy application code
+COPY app.py .
 
-# Update and try to install antigravity
-RUN apt-get update && \
-    apt-get install -y antigravity || true
-    # ^ allow build to continue even if install fails
+# Expose the port Render uses
+EXPOSE 8080
 
-# Render does not use systemd; keep container alive
-CMD ["bash"]
+# Start the app
+CMD ["python", "app.py"]
+
 
